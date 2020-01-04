@@ -27,7 +27,7 @@ public class SubRecordDataShort implements SubRecordData {
 		Map<String,Float> variables = new HashMap<String, Float>();
 		variables.put(key, new Float(value));
 		
-		value = (short)Math.round(ModelFunctions.evaluateMathematicalExpression(stringValue, variables));
+		value = (short)Math.round(ModelFunctions.evaluateMathematicalExpressionFloat(stringValue, variables));
 	}
 
 	@Override

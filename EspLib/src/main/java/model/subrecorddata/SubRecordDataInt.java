@@ -30,7 +30,7 @@ public class SubRecordDataInt implements SubRecordData {
 		Map<String,Float> variables = new HashMap<String, Float>();
 		variables.put(key, new Float(value));
 		
-		value = Math.round(ModelFunctions.evaluateMathematicalExpression(stringValue, variables));
+		value = Math.round(ModelFunctions.evaluateMathematicalExpressionFloat(stringValue, variables));
 	}
 
 	@Override

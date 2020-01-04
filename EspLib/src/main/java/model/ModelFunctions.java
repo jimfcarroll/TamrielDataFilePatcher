@@ -180,36 +180,41 @@ public class ModelFunctions {
 		}
 	}
 	
-	public static float evaluateMathematicalExpression(String expression) {
-		return evaluateMathematicalExpression(expression, null);
+	public static float evaluateMathematicalExpressionFloat(String expression) {
+		return evaluateMathematicalExpressionFloat(expression, null);
 	}
 	
-	public static float evaluateMathematicalExpression(String expression, Map<String,Float> variables) {
+	public static float evaluateMathematicalExpressionFloat(String expression, Map<String, Float> variables) {
+		return (float)evaluateMathematicalExpression(expression, variables);
+	}
+	
+	public static double evaluateMathematicalExpressionDouble(String expression, Map<String, Double> variables) {
+		return evaluateMathematicalExpression(expression, variables);
+	}
+	
+	private static double evaluateMathematicalExpression(String expression, Map<String, ? extends Number> variables) {
+		String resolvedExpression = resolveRandomNumbersInExpression(expression);
 		org.nfunk.jep.JEP myParser = new org.nfunk.jep.JEP();
 		
 		if (variables != null) {
 			Set<String> keySet = variables.keySet();
 			for (String key: keySet) {
-				myParser.addVariable(key, variables.get(key));
+				myParser.addVariable(key, variables.get(key).doubleValue());
 			}
 		}
 		
-		myParser.parseExpression(expression);
-		return (float)myParser.getValue();
-	}
-	
-	public static double evaluateMathematicalExpressionDouble(String expression, Map<String,Double> variables) {
-		org.nfunk.jep.JEP myParser = new org.nfunk.jep.JEP();
-		
-		if (variables != null) {
-			Set<String> keySet = variables.keySet();
-			for (String key: keySet) {
-				myParser.addVariable(key, variables.get(key));
-			}
-		}
-		
-		myParser.parseExpression(expression);
+		myParser.parseExpression(resolvedExpression);
 		return myParser.getValue();
+	}
+	
+	private static String resolveRandomNumbersInExpression(String expression) {
+		String resultExpression = expression;
+		
+		while (resultExpression.indexOf("RAND()") != -1) {
+			resultExpression = resultExpression.replaceFirst("RAND\\(\\)", String.valueOf(Math.random()));
+		}
+		
+		return resultExpression;
 	}
 	
 	public static String evaluateStringExpression(String expression) {
@@ -296,18 +301,20 @@ public class ModelFunctions {
 			return false;
 		}
 		
-		expression = expression.trim();
-		if (Character.isDigit(expression.charAt(0))) {
+		String expressionTrimmed = expression.trim();
+		expressionTrimmed = expressionTrimmed.replace("RAND()", "0");
+		
+		if (Character.isDigit(expressionTrimmed.charAt(0))) {
 			return true;
 		}
 		
-		if (expression.charAt(0) == '-' && expression.length() > 1 && Character.isDigit(expression.charAt(1))) {
+		if (expressionTrimmed.charAt(0) == '-' && expressionTrimmed.length() > 1 && Character.isDigit(expressionTrimmed.charAt(1))) {
 			return true;
 		}
 		
 		String firstVariable = "";
-		for(int i = 0; i < expression.length() && Character.isLetter(expression.charAt(i)); i++) {
-			firstVariable += expression.charAt(i);
+		for(int i = 0; i < expressionTrimmed.length() && Character.isLetter(expressionTrimmed.charAt(i)); i++) {
+			firstVariable += expressionTrimmed.charAt(i);
 		}
 		
 		switch (columns.getTypeOf(firstVariable)) {
@@ -323,5 +330,17 @@ public class ModelFunctions {
 	
 	public static boolean isStringExpression(String expression, Columns columns) {
 		return !isNumberExpression(expression, columns);
+	}
+	
+	public static int truncateInt(int value, int minimumValue, int maximumValue)  {
+		if (value > maximumValue) {
+			return maximumValue;
+		}
+		
+		if (value < minimumValue) {
+			return minimumValue;
+		}
+		
+		return value;
 	}
 }

@@ -31,7 +31,7 @@ public class SubRecordDataByte implements SubRecordData {
 	public void setValueByString(String stringValue) {
 		Map<String, Float> variables = new HashMap<String, Float>();
 		variables.put(key, new Float(value));
-		value = (byte)ModelFunctions.evaluateMathematicalExpression(stringValue, variables);
+		value = (byte)ModelFunctions.evaluateMathematicalExpressionFloat(stringValue, variables);
 	}
 
 	@Override

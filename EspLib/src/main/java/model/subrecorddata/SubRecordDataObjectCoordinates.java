@@ -51,12 +51,12 @@ public class SubRecordDataObjectCoordinates implements SubRecordData {
 		variables.put("yRotate", yRotate);
 		variables.put("zRotate", zRotate);
 		
-		xPos = ModelFunctions.evaluateMathematicalExpression(subExpressions[0], variables);
-		yPos = ModelFunctions.evaluateMathematicalExpression(subExpressions[1], variables);
-		zPos = ModelFunctions.evaluateMathematicalExpression(subExpressions[2], variables);
-		xRotate = ModelFunctions.evaluateMathematicalExpression(subExpressions[3], variables);
-		yRotate = ModelFunctions.evaluateMathematicalExpression(subExpressions[4], variables);
-		zRotate = ModelFunctions.evaluateMathematicalExpression(subExpressions[5], variables);
+		xPos = ModelFunctions.evaluateMathematicalExpressionFloat(subExpressions[0], variables);
+		yPos = ModelFunctions.evaluateMathematicalExpressionFloat(subExpressions[1], variables);
+		zPos = ModelFunctions.evaluateMathematicalExpressionFloat(subExpressions[2], variables);
+		xRotate = ModelFunctions.evaluateMathematicalExpressionFloat(subExpressions[3], variables);
+		yRotate = ModelFunctions.evaluateMathematicalExpressionFloat(subExpressions[4], variables);
+		zRotate = ModelFunctions.evaluateMathematicalExpressionFloat(subExpressions[5], variables);
 	}
 
 	public String getValueAsString() {

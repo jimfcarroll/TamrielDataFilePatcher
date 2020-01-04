@@ -38,8 +38,8 @@ public class SingleComparison implements Comparison {
 				}
 			}
 			
-			float leftExpressionResult = ModelFunctions.evaluateMathematicalExpression(leftExpression, variables);
-			float rightExpressionResult = ModelFunctions.evaluateMathematicalExpression(rightExpression, variables);
+			float leftExpressionResult = ModelFunctions.evaluateMathematicalExpressionFloat(leftExpression, variables);
+			float rightExpressionResult = ModelFunctions.evaluateMathematicalExpressionFloat(rightExpression, variables);
 			return comparisonResult(leftExpressionResult, rightExpressionResult);
 
 			

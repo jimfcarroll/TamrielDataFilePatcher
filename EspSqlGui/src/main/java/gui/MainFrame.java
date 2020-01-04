@@ -61,13 +61,16 @@ public class MainFrame extends JFrame {
 		fileNameField = new JTextField(30);
 		fileNameField.setText(System.getProperty("user.dir") + File.separatorChar);
 		JButton startProcessingButton = new JButton("Process File");
+		JButton selectFileButton = new JButton("Select File");
 		
 		fileNameFieldPanel.add(fileNameFieldLabel);
 		fileNameFieldPanel.add(fileNameField);
+		fileNameFieldPanel.add(selectFileButton);
 		fileNameFieldPanel.add(startProcessingButton);
 		add(fileNameFieldPanel, "North");
 		
 		FileProcessor fileProcessor = new FileProcessor();
+		
 		ProcessFileButtonListener listener = new ProcessFileButtonListener(
 				fileProcessor,
 				sqlCommandTextArea,
@@ -76,7 +79,15 @@ public class MainFrame extends JFrame {
 				fileNameField
 		);
 		
+		SelectFileButtonListener listener2 = new SelectFileButtonListener(
+				this,
+				fileNameField,
+				selectFileButton
+		);
+		
 		startProcessingButton.addActionListener(listener);
+		selectFileButton.addActionListener(listener2);
+		
 		pack();
 		setSize(600,400);
 	}

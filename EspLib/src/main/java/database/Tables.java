@@ -10,6 +10,7 @@ import database.table.ExteriorCellsTable;
 import database.table.FactionReferencesTable;
 import database.table.FileReferencesTable;
 import database.table.IDObjectsTable;
+import database.table.InteriorCellsTable;
 import database.table.ItemReferencesTable;
 import database.table.MasterFilesTable;
 import database.table.ScriptReferencesTable;
@@ -20,6 +21,10 @@ import database.table.Table;
 
 public class Tables {
 	public static Table getTable(String tableName) {
+		
+		if (tableName == null) {
+			return null;
+		}
 	
 		if (tableName.equals("cellObjects")) {
 			return new CellObjectsTable();
@@ -39,6 +44,10 @@ public class Tables {
 		
 		if (tableName.equals("exteriorCells")) {
 			return new ExteriorCellsTable();
+		}
+		
+		if (tableName.equals("interiorCells")) {
+			return new InteriorCellsTable();
 		}
 		
 		if (tableName.equals("masterFiles")) {

@@ -200,27 +200,27 @@ public class CellObjectsTable extends Table {
 										variables.put("zRotate", updateSubRecordCoordinateData.getzRotate());
 										
 										if (updateValues.containsKey("xPos")) {
-											updateSubRecordCoordinateData.setxPos(ModelFunctions.evaluateMathematicalExpression(updateValues.get("xPos"), variables));
+											updateSubRecordCoordinateData.setxPos(ModelFunctions.evaluateMathematicalExpressionFloat(updateValues.get("xPos"), variables));
 											currentCellObjectRowValues[selectedColumns.getPositionOf("xPos")] = ModelFunctions.formatFloatNumber(updateSubRecordCoordinateData.getxPos(), 3);
 										}
 										if (updateValues.containsKey("yPos")) {
-											updateSubRecordCoordinateData.setyPos(ModelFunctions.evaluateMathematicalExpression(updateValues.get("yPos"), variables));
+											updateSubRecordCoordinateData.setyPos(ModelFunctions.evaluateMathematicalExpressionFloat(updateValues.get("yPos"), variables));
 											currentCellObjectRowValues[selectedColumns.getPositionOf("yPos")] = ModelFunctions.formatFloatNumber(updateSubRecordCoordinateData.getyPos(), 3);
 										}
 										if (updateValues.containsKey("zPos")) {
-											updateSubRecordCoordinateData.setzPos(ModelFunctions.evaluateMathematicalExpression(updateValues.get("zPos"), variables));
+											updateSubRecordCoordinateData.setzPos(ModelFunctions.evaluateMathematicalExpressionFloat(updateValues.get("zPos"), variables));
 											currentCellObjectRowValues[selectedColumns.getPositionOf("zPos")] = ModelFunctions.formatFloatNumber(updateSubRecordCoordinateData.getzPos(), 3);
 										}
 										if (updateValues.containsKey("xRotate")) {
-											updateSubRecordCoordinateData.setxRotate(ModelFunctions.evaluateMathematicalExpression(updateValues.get("xRotate"), variables));
+											updateSubRecordCoordinateData.setxRotate(ModelFunctions.evaluateMathematicalExpressionFloat(updateValues.get("xRotate"), variables));
 											currentCellObjectRowValues[selectedColumns.getPositionOf("xRotate")] = ModelFunctions.formatFloatNumber(updateSubRecordCoordinateData.getxRotate(), 3);
 										}
 										if (updateValues.containsKey("yRotate")) {
-											updateSubRecordCoordinateData.setyRotate(ModelFunctions.evaluateMathematicalExpression(updateValues.get("yRotate"), variables));
+											updateSubRecordCoordinateData.setyRotate(ModelFunctions.evaluateMathematicalExpressionFloat(updateValues.get("yRotate"), variables));
 											currentCellObjectRowValues[selectedColumns.getPositionOf("yRotate")] = ModelFunctions.formatFloatNumber(updateSubRecordCoordinateData.getyRotate(), 3);
 										}
 										if (updateValues.containsKey("zRotate")) {
-											updateSubRecordCoordinateData.setzRotate(ModelFunctions.evaluateMathematicalExpression(updateValues.get("zRotate"), variables));
+											updateSubRecordCoordinateData.setzRotate(ModelFunctions.evaluateMathematicalExpressionFloat(updateValues.get("zRotate"), variables));
 											currentCellObjectRowValues[selectedColumns.getPositionOf("zRotate")] = ModelFunctions.formatFloatNumber(updateSubRecordCoordinateData.getzRotate(), 3);
 										}
 										
@@ -228,7 +228,7 @@ public class CellObjectsTable extends Table {
 										if (!hasXSCL && updateValues.containsKey("scale")) {
 											Map<String,Float> scaleVariable = new HashMap<String,Float>();
 											scaleVariable.put("scale", new Float(1));
-											float scale = ModelFunctions.evaluateMathematicalExpression(updateValues.get("scale"), scaleVariable);
+											float scale = ModelFunctions.evaluateMathematicalExpressionFloat(updateValues.get("scale"), scaleVariable);
 											currentCellObjectRowValues[allColumns.getPositionOf("scale")] = ModelFunctions.formatFloatNumber(scale, 2);
 											
 											//an XSCL needs to be manually added now, since there is none yet. Only objects with scale 1.0 don't need one.
@@ -290,7 +290,7 @@ public class CellObjectsTable extends Table {
 					//XSCL
 					float scale;
 					if (insertRow.hasColumn("scale")) {
-						scale = ModelFunctions.evaluateMathematicalExpression(insertRow.getValueOf("scale"));
+						scale = ModelFunctions.evaluateMathematicalExpressionFloat(insertRow.getValueOf("scale"));
 						if (scale != 1f) {
 							SubRecord scaleSubRecord = new SubRecord("XSCL", new SubRecordDataFloat(scale,"scale",2), record);
 							allSubRecords.add(scaleSubRecord);
@@ -304,32 +304,32 @@ public class CellObjectsTable extends Table {
 					SubRecordDataObjectCoordinates newSubRecordCoordinateData = new SubRecordDataObjectCoordinates(new byte[24]);
 					
 					if (insertRow.hasColumn("xPos")) {
-						newSubRecordCoordinateData.setxPos(ModelFunctions.evaluateMathematicalExpression(insertRow.getValueOf("xPos")));
+						newSubRecordCoordinateData.setxPos(ModelFunctions.evaluateMathematicalExpressionFloat(insertRow.getValueOf("xPos")));
 					}
 					newCellObjectRowValues[allColumns.getPositionOf("xPos")] = ModelFunctions.formatFloatNumber(newSubRecordCoordinateData.getxPos(), 3);
 					
 					if (insertRow.hasColumn("yPos")) {
-						newSubRecordCoordinateData.setyPos(ModelFunctions.evaluateMathematicalExpression(insertRow.getValueOf("yPos")));
+						newSubRecordCoordinateData.setyPos(ModelFunctions.evaluateMathematicalExpressionFloat(insertRow.getValueOf("yPos")));
 					}
 					newCellObjectRowValues[allColumns.getPositionOf("yPos")] = ModelFunctions.formatFloatNumber(newSubRecordCoordinateData.getyPos(), 3);
 					
 					if (insertRow.hasColumn("zPos")) {
-						newSubRecordCoordinateData.setzPos(ModelFunctions.evaluateMathematicalExpression(insertRow.getValueOf("zPos")));
+						newSubRecordCoordinateData.setzPos(ModelFunctions.evaluateMathematicalExpressionFloat(insertRow.getValueOf("zPos")));
 					}
 					newCellObjectRowValues[allColumns.getPositionOf("zPos")] = ModelFunctions.formatFloatNumber(newSubRecordCoordinateData.getzPos(), 3);
 					
 					if (insertRow.hasColumn("xRotate")) {
-						newSubRecordCoordinateData.setxRotate(ModelFunctions.evaluateMathematicalExpression(insertRow.getValueOf("xRotate")));
+						newSubRecordCoordinateData.setxRotate(ModelFunctions.evaluateMathematicalExpressionFloat(insertRow.getValueOf("xRotate")));
 					}
 					newCellObjectRowValues[allColumns.getPositionOf("xRotate")] = ModelFunctions.formatFloatNumber(newSubRecordCoordinateData.getxRotate(), 3);
 					
 					if (insertRow.hasColumn("yRotate")) {
-						newSubRecordCoordinateData.setyRotate(ModelFunctions.evaluateMathematicalExpression(insertRow.getValueOf("yRotate")));
+						newSubRecordCoordinateData.setyRotate(ModelFunctions.evaluateMathematicalExpressionFloat(insertRow.getValueOf("yRotate")));
 					}
 					newCellObjectRowValues[allColumns.getPositionOf("yRotate")] = ModelFunctions.formatFloatNumber(newSubRecordCoordinateData.getyRotate(), 3);
 					
 					if (insertRow.hasColumn("zRotate")) {
-						newSubRecordCoordinateData.setzRotate(ModelFunctions.evaluateMathematicalExpression(insertRow.getValueOf("zRotate")));
+						newSubRecordCoordinateData.setzRotate(ModelFunctions.evaluateMathematicalExpressionFloat(insertRow.getValueOf("zRotate")));
 					}
 					newCellObjectRowValues[allColumns.getPositionOf("zRotate")] = ModelFunctions.formatFloatNumber(newSubRecordCoordinateData.getzRotate(), 3);
 					

@@ -31,7 +31,7 @@ public class SubrecordDataNPCO implements SubRecordData {
 	public void setNumberByString(String stringValue) {
 		Map<String,Float> variables = new HashMap<String, Float>();
 		variables.put("number", new Float(number));
-		number = Math.round(ModelFunctions.evaluateMathematicalExpression(stringValue, variables));
+		number = Math.round(ModelFunctions.evaluateMathematicalExpressionFloat(stringValue, variables));
 	}
 	
 	public void setItemByString(String stringValue) {

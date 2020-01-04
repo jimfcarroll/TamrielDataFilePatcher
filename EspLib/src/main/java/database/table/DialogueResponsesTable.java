@@ -411,7 +411,7 @@ public class DialogueResponsesTable extends Table {
 						
 						if (allColumns.isNumeric(key)) {
 							variablesNumber.put(key, new Float(0));
-							resultNumber = ModelFunctions.evaluateMathematicalExpression(updateValues.get(key), variablesNumber);
+							resultNumber = ModelFunctions.evaluateMathematicalExpressionFloat(updateValues.get(key), variablesNumber);
 							
 							if (resultNumber % 1 == 0) {
 								currentDialogueResponseRowValues[allColumns.getPositionOf(key)] = String.valueOf((int)resultNumber);

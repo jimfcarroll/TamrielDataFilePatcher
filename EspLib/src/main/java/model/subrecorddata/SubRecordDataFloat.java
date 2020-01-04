@@ -39,7 +39,7 @@ public class SubRecordDataFloat implements SubRecordData {
 		Map<String,Float> variables = new HashMap<String, Float>();
 		variables.put(key, value);
 		
-		value = ModelFunctions.evaluateMathematicalExpression(stringValue, variables);
+		value = ModelFunctions.evaluateMathematicalExpressionFloat(stringValue, variables);
 	}
 
 	@Override

@@ -15,9 +15,9 @@ import model.subrecorddata.SubRecordDataString;
 
 public class ExteriorCellsTable extends Table {
 	protected Columns allColumns = new Columns(
-			new String[] {"name", "gridX", "gridY", "region", "illegalToSleepHere"},
-			new Columns.Type[] {Columns.Type.text, Columns.Type.integer, Columns.Type.integer, Columns.Type.text, Columns.Type.integer},
-			new boolean[] {true, false, false, true, true}
+			new String[] {"name", "gridX", "gridY", "region", "illegalToSleepHere", "objectCount"},
+			new Columns.Type[] {Columns.Type.text, Columns.Type.integer, Columns.Type.integer, Columns.Type.text, Columns.Type.integer, Columns.Type.integer},
+			new boolean[] {true, false, false, true, true, false}
 	);
 
 	@Override
@@ -34,7 +34,7 @@ public class ExteriorCellsTable extends Table {
 	@Override
 	public List<Row> update(List<Record> records, Comparison whereComparison, Map<String, String> updateValues) {
 		if (allColumns.containsNonUpdatableFields(updateValues)) {
-			System.out.println("gridX and gridY may not be updated.");
+			System.out.println("gridX, gridY and objectCount may not be updated.");
 		}
 		return executeRUD(records, allColumns, whereComparison, updateValues, false);
 	}
@@ -56,12 +56,27 @@ public class ExteriorCellsTable extends Table {
 			
 			String[] rowValues = allColumns.createEmptyRowValues();
 			boolean noExteriorCell = false;
+			boolean refsStarted = false;
+			int objectCount = 0;
 			
 			for (int i2 = 0; i2 < record.getSubRecords().size(); i2++) {
 				SubRecord subRecord = record.getSubRecords().get(i2);
 				
 				//FRMR is the first entry of the references in a cell.
 				if (subRecord.getName().equals("FRMR")) {
+					objectCount++;
+					if (!refsStarted) {
+						refsStarted = true;
+					}
+				}
+				
+				if (refsStarted) {
+					continue;
+				}
+				
+				//if these subrecords are contained, this is an interior cell.
+				if (subRecord.getName().equals("WHGT") || subRecord.getName().equals("AMBI")) {
+					noExteriorCell = true;
 					break;
 				}
 				
@@ -74,15 +89,18 @@ public class ExteriorCellsTable extends Table {
 				} else if (subRecord.getName().equals("DATA")) {
 					SubRecordDataComposed composedSubRecordData = (SubRecordDataComposed) subRecord.getData();
 					
-					//first ensure that the current cell is an exterior cell
-					String flags = composedSubRecordData.getValueAsStringOf("flags");
-					if (flags.equals("6")) {
-						rowValues[allColumns.getPositionOf("illegalToSleepHere")] = "1";
-					} else if (flags.equals("2") || flags.equals("0")) {
-						rowValues[allColumns.getPositionOf("illegalToSleepHere")] = "0";
-					} else {
+					int flags = composedSubRecordData.getValueAsIntOf("flags");
+					
+					// if the leftmost byte is set, this is an interior that behaves like an exterior
+					if ((flags & 0x80) == 0x80) {
 						noExteriorCell = true;
 						break;
+					}
+					
+					if ((flags & 0x04) == 0x04) {
+						rowValues[allColumns.getPositionOf("illegalToSleepHere")] = "1";
+					} else {
+						rowValues[allColumns.getPositionOf("illegalToSleepHere")] = "0";
 					}
 					
 					rowValues[allColumns.getPositionOf("gridX")] = composedSubRecordData.getValueAsStringOf("gridX");
@@ -94,11 +112,13 @@ public class ExteriorCellsTable extends Table {
 				continue;
 			}
 			
+			rowValues[allColumns.getPositionOf("objectCount")] = String.valueOf(objectCount);
 			Row newRow = new Row(allColumns, rowValues);
+			
 			if (whereComparison.testConditionOnRow(newRow)) {
 				
 				if (updateValues != null) {
-					//sometimes there is no region entry in an exterior cell. this variable is to check if
+					//sometimes there is no region entry in an exterior cell. this variable is to check if there is
 					boolean regionUpdated = false;
 					
 					for (int i2 = 0; i2 < record.getSubRecords().size(); i2++) {
@@ -130,25 +150,20 @@ public class ExteriorCellsTable extends Table {
 							if (updateValues.containsKey("illegalToSleepHere")) {
 								Map<String, Float> variables = new HashMap<String, Float>();
 								variables.put("illegalToSleepHere", Float.parseFloat(rowValues[allColumns.getPositionOf("illegalToSleepHere")]));
-								int newValue = Math.round(ModelFunctions.evaluateMathematicalExpression(updateValues.get("illegalToSleepHere"), variables));
+								int newValue = Math.round(ModelFunctions.evaluateMathematicalExpressionFloat(updateValues.get("illegalToSleepHere"), variables));
+								
+								int binaryFlags = composedSubRecordData.getValueAsIntOf("flags");
 								
 								if (newValue < 1) {
-									composedSubRecordData.setValueByStringFor("2", "flags");
+									binaryFlags = binaryFlags & 0xFB;
 									rowValues[allColumns.getPositionOf("illegalToSleepHere")] = "0";
 								} else {
-									composedSubRecordData.setValueByStringFor("6", "flags");
+									binaryFlags = binaryFlags | 0x04;
 									rowValues[allColumns.getPositionOf("illegalToSleepHere")] = "1";
 								}
+								
+								composedSubRecordData.setValueByStringFor(String.valueOf(binaryFlags), "flags");
 							}
-							
-//							if (updateValues.containsKey("gridX")) {
-//								composedSubRecordData.setValueByStringFor(updateValues.get("gridX"), "gridX");
-//								rowValues[allColumns.getPositionOf("gridX")] = composedSubRecordData.getValueAsStringOf("gridX");
-//							}
-//							if (updateValues.containsKey("gridY")) {
-//								composedSubRecordData.setValueByStringFor(updateValues.get("gridY"), "gridY");
-//								rowValues[allColumns.getPositionOf("gridY")] = composedSubRecordData.getValueAsStringOf("gridY");
-//							}
 						}
 					}
 					
@@ -185,6 +200,37 @@ public class ExteriorCellsTable extends Table {
 							if (i2 < i1) {
 								i1--;
 							}
+							break;
+						}
+					}
+					
+					//search for a pathgrid record belonging to this exterior cell
+					boolean pathgridFound = false;
+					for (int i2 = 0; i2 < records.size(); i2++) {
+						Record searchRecord = records.get(i2);
+						
+						if (!searchRecord.getName().equals("PGRD")) {
+							continue;
+						}
+						
+						for (SubRecord nextSubRecord : searchRecord.getSubRecords()) {
+							if (nextSubRecord.getName().equals("DATA")) {
+								SubRecordDataComposed composedSubRecordData = (SubRecordDataComposed)nextSubRecord.getData();
+								
+								if (composedSubRecordData.getValueAsStringOf("gridX").equals(rowValues[allColumns.getPositionOf("gridX")]) &&
+										composedSubRecordData.getValueAsStringOf("gridY").equals(rowValues[allColumns.getPositionOf("gridY")])) {
+									records.remove(i2);
+									pathgridFound = true;
+									
+									if (i2 < i1) {
+										i1--;
+									}
+								}
+								break;
+							}
+						}
+						
+						if (pathgridFound) {
 							break;
 						}
 					}

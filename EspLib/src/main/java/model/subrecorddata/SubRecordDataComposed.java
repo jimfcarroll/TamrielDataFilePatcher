@@ -71,7 +71,7 @@ public class SubRecordDataComposed implements SubRecordData {
 		Map<String, Float> variables = new HashMap<String, Float>();
 		variables.put(variable, currentValue);
 		
-		float newValue = ModelFunctions.evaluateMathematicalExpression(stringValue, variables);
+		float newValue = ModelFunctions.evaluateMathematicalExpressionFloat(stringValue, variables);
 		setValueAt(index, newValue);
 	}
 	
@@ -90,6 +90,24 @@ public class SubRecordDataComposed implements SubRecordData {
 		default:
 			return ModelFunctions.formatFloatNumber(currentValue, 3);
 		}
+	}
+	
+	public int getValueAsIntOf(String variable) {
+		int index = getIndexOf(variable);
+		if (index == -1) {
+			throw new IllegalArgumentException(variable+" is not a variable in this subrecord.");
+		}
+		
+		return Math.round(getNumberValueOf(values[index]));
+	}
+	
+	public float getValueAsFloatOf(String variable) {
+		int index = getIndexOf(variable);
+		if (index == -1) {
+			throw new IllegalArgumentException(variable+" is not a variable in this subrecord.");
+		}
+		
+		return getNumberValueOf(values[index]);
 	}
 
 	@Override
@@ -115,6 +133,15 @@ public class SubRecordDataComposed implements SubRecordData {
 		}
 		
 		return sB.toString();
+	}
+	
+	public int getIndexOf(String variable) {
+		for (int i = 0; i < variables.length; i++) {
+			if (variables[i].equals(variable)) {
+				return i;
+			}
+		}
+		return -1;
 	}
 	
 	private void setValueAt(int i, float newValue) {
@@ -144,14 +171,4 @@ public class SubRecordDataComposed implements SubRecordData {
 			return (((Float)o).floatValue());
 		}
 	}
-	
-	private int getIndexOf(String variable) {
-		for (int i = 0; i < variables.length; i++) {
-			if (variables[i].equals(variable)) {
-				return i;
-			}
-		}
-		return -1;
-	}
-
 }

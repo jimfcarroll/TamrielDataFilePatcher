@@ -380,6 +380,23 @@ public class SubRecord{
 			}
 		}
 		
+		if (parentRecord.getName().equals("PGRD")){
+			if (name.equals("DATA")) {
+				this.data = new SubRecordDataComposed(
+						subrecordDataBytes,
+						new SubRecordDataComposed.Type[] {SubRecordDataComposed.Type.Integer, SubRecordDataComposed.Type.Integer, SubRecordDataComposed.Type.Short, SubRecordDataComposed.Type.Short},
+						new String[] {"gridX", "gridY", "?", "numberOfPoints"}
+				);
+				return;
+			} else if (name.equals("NAME")) {
+				this.data = new SubRecordDataString(subrecordDataBytes, "cell", 0, 100);
+				return;
+			}
+			
+			this.data = new SubRecordDataUnknown(subrecordDataBytes);
+			return;
+		}
+		
 		//fallback for NAME.
 		if (name.equals("NAME")) {
 			this.data = new SubRecordDataString(subrecordDataBytes, "id", 0, 100, true, true);
